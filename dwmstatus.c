@@ -138,17 +138,6 @@ getbattery(char *base)
     sscanf(co, "%d", &remcap);
     free(co);
 
-    co = readfile(base, "status");
-    if (!strncmp(co, "Discharging", 11)) {
-        status = "";
-    } else if (!strncmp(co, "Charging", 8)) {
-        status = "";
-    } else if (!strncmp(co, "Full", 4)) {
-        status = "";
-    } else {
-        status = "";
-    }
-
     if (remcap < 0 || descap < 0)
         return smprintf("invalid");
 
@@ -166,7 +155,18 @@ getbattery(char *base)
         bat_icon = "";
     }
 
-    return smprintf("%s %s%.0f%%",status, bat_icon, capacity);
+    co = readfile(base, "status");
+    if (!strncmp(co, "Discharging", 11)) {
+        status = bat_icon;
+    } else if (!strncmp(co, "Charging", 8)) {
+        status = "";
+    } else if (!strncmp(co, "Full", 4)) {
+        status = "";
+    } else {
+        status = "";
+    }
+
+    return smprintf("%s%.0f%%",status, capacity);
 }
 
 int
@@ -224,10 +224,10 @@ main(void)
 
     for (;;sleep(60)) {
         bat = getbattery("/sys/class/power_supply/BAT0");
-        tm_msk= mktimes("%a %d %b %H:%M %Y", tz_moscow);
+        tm_msk= mktimes("%a %d %b %Y %H:%M", tz_moscow);
         cpu_temp = get_cpu_temp();
 
-        status = smprintf(" %s | %s | %s ", cpu_temp, bat, tm_msk);
+        status = smprintf(" %s  %s  %s ", cpu_temp, bat, tm_msk);
         setstatus(status);
 
         free(cpu_temp);
