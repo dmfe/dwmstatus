@@ -224,7 +224,7 @@ main(void)
 
     for (;;sleep(60)) {
         bat = getbattery("/sys/class/power_supply/BAT0");
-        tm_msk= mktimes("%a %d %b %Y %H:%M", tz_moscow);
+        tm_msk= mktimes("%a %d %b %Y %H:%M", tz_moscow);
         cpu_temp = get_cpu_temp();
 
         status = smprintf(" %s  %s  %s ", cpu_temp, bat, tm_msk);
